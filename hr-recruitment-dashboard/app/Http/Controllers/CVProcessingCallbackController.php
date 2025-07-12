@@ -6,9 +6,17 @@ use App\Models\Application;
 use App\Services\CVProcessorService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Exception;
 
 class CVProcessingCallbackController extends Controller
 {
+    protected $cvProcessorService;
+
+    public function __construct(CVProcessorService $cvProcessorService)
+    {
+        $this->cvProcessorService = $cvProcessorService;
+    }
+
     public function handleCallback(Request $request)
     {
         try {
@@ -31,15 +39,15 @@ class CVProcessingCallbackController extends Controller
                 
                 // Perform keyword matching
                 if ($application->keywordSet) {
-                    $processor = new CVProcessorService();
-                    $matchResult = $processor->matchKeywords($extractedText, $application->keywordSet->keywords);
+                    $matchResult = $this->cvProcessorService->matchKeywords($extractedText, $application->keywordSet->keywords);
                     
                     $application->update([
                         'qualification_status' => $matchResult['qualified'] ? 'qualified' : 'not_qualified',
                         'match_percentage' => $matchResult['match_percentage'],
                         'found_keywords' => $matchResult['found_keywords'],
                         'missing_keywords' => $matchResult['missing_keywords'],
-                        'processed_at' => now()
+                        'processed_at' => now(),
+                        'processing_status' => 'completed'
                     ]);
                     
                     Log::info('CV processing completed via GitHub Actions', [
@@ -54,7 +62,8 @@ class CVProcessingCallbackController extends Controller
                 
                 $application->update([
                     'qualification_status' => 'failed',
-                    'processing_error' => $error
+                    'processing_error' => $error,
+                    'processing_status' => 'failed'
                 ]);
                 
                 Log::error('CV processing failed via GitHub Actions', [

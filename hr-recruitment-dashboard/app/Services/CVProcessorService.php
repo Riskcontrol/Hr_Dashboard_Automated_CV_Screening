@@ -133,14 +133,8 @@ class CVProcessorService
 
             foreach ($phpWord->getSections() as $section) {
                 foreach ($section->getElements() as $element) {
-                    if (method_exists($element, 'getText')) {
+                    if ($element instanceof \PhpOffice\PhpWord\Element\TextRun || $element instanceof \PhpOffice\PhpWord\Element\Text) {
                         $text .= $element->getText() . "\n";
-                    } elseif (method_exists($element, 'getElements')) {
-                        foreach ($element->getElements() as $childElement) {
-                            if (method_exists($childElement, 'getText')) {
-                                $text .= $childElement->getText() . "\n";
-                            }
-                        }
                     }
                 }
             }
@@ -151,7 +145,7 @@ class CVProcessorService
         }
     }
 
-    private function matchKeywords($extractedText, $keywords)
+    public function matchKeywords($extractedText, $keywords)
     {
         $normalizedText = strtolower($extractedText);
         $foundKeywords = [];
