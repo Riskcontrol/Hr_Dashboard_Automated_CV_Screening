@@ -23,6 +23,8 @@ class Application extends Model
         'found_keywords',
         'missing_keywords',
         'processed_at',
+        'processing_status',
+        'processing_started_at',
     ];
 
     protected $casts = [
