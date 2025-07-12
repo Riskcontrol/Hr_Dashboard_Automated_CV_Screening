@@ -170,7 +170,9 @@ class ApplicationSubmissionController extends Controller
                 'cv_original_name' => $fileData['original_name'],
                 'cv_stored_path' => $fileData['stored_path'],
                 'cv_file_size' => $fileData['file_size'],
-                'qualification_status' => 'pending'
+                'qualification_status' => 'pending',
+                'processing_status' => 'pending',
+                'processing_started_at' => now()
             ]);
 
             // Get keyword set
