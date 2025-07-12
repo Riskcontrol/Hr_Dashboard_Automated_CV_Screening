@@ -39,8 +39,9 @@
     </div>
 
     <!-- Status Display -->
-    <div class="text-center application-status mb-8" data-status="{{ $application->qualification_status }}">
-        @if($application->qualification_status === 'qualified')
+    <div class="text-center application-status mb-8" data-status="{{ $application->processing_status }}">
+        @if($application->processing_status === 'completed')
+            @if($application->qualification_status === 'qualified')
             <div class="bg-green-50 border border-green-200 rounded-lg p-8">
                 <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-4">
                     <i class="fas fa-check-circle text-green-600 text-3xl"></i>
@@ -51,8 +52,7 @@
                     <p class="text-green-800 font-medium">Our HR team will contact you within 2-3 business days.</p>
                 </div>
             </div>
-
-        @elseif($application->qualification_status === 'not_qualified')
+            @elseif($application->qualification_status === 'not_qualified')
             <div class="bg-red-50 border border-red-200 rounded-lg p-8">
                 <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 mb-4">
                     <i class="fas fa-times-circle text-red-600 text-3xl"></i>
@@ -74,8 +74,8 @@
                     </div>
                 @endif
             </div>
-
-        @elseif($application->qualification_status === 'pending')
+            @endif
+        @elseif($application->processing_status === 'pending')
             <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-8">
                 <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-yellow-100 mb-4">
                     <i class="fas fa-clock text-yellow-600 text-3xl"></i>
@@ -87,7 +87,7 @@
                 </div>
             </div>
 
-        @else
+        @elseif($application->processing_status === 'failed')
             <div class="bg-gray-50 border border-gray-200 rounded-lg p-8">
                 <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-gray-100 mb-4">
                     <i class="fas fa-exclamation-triangle text-gray-600 text-3xl"></i>
@@ -123,7 +123,7 @@
     </div>
 </div>
 
-@if($application->qualification_status === 'pending')
+@if($application->processing_status === 'pending')
 @push('scripts')
 <script>
     // Auto-refresh pending applications every 10 seconds
