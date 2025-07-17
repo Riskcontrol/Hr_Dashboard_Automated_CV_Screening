@@ -14,7 +14,7 @@
 </div>
 
 <!-- Stats Cards -->
-<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
     <div class="bg-white p-6 rounded-lg shadow">
         <div class="flex items-center">
             <div class="p-3 rounded-full bg-blue-100 text-blue-600">
@@ -35,6 +35,18 @@
             <div class="ml-4">
                 <h3 class="text-2xl font-bold text-gray-900">{{ $stats['qualified_applications'] }}</h3>
                 <p class="text-gray-600">Qualified</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white p-6 rounded-lg shadow">
+        <div class="flex items-center">
+            <div class="p-3 rounded-full bg-sky-100 text-sky-600">
+                <i class="fas fa-star-half-alt text-2xl"></i>
+            </div>
+            <div class="ml-4">
+                <h3 class="text-2xl font-bold text-gray-900">{{ $stats['fairly_qualified_applications'] }}</h3>
+                <p class="text-gray-600">Fairly Qualified</p>
             </div>
         </div>
     </div>
@@ -70,14 +82,16 @@
     <div class="p-6 border-b border-gray-200">
         <h2 class="text-xl font-semibold text-gray-900">Recent Applications</h2>
     </div>
-    <div class="overflow-x-auto">
+    <div class="overflow-y-auto h-96">
         <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
                 <tr>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Position</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Qualification Status</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Processing Status</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">CV</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Submitted</th>
                 </tr>
             </thead>
@@ -94,15 +108,33 @@
                         {{ $app->keywordSet->job_title ?? 'N/A' }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
-                        @if($app->qualification_status === 'qualified')
+                        @if($app->qualification_status === 'Qualified')
                             <span class="badge badge-success">Qualified</span>
-                        @elseif($app->qualification_status === 'not_qualified')
+                        @elseif($app->qualification_status === 'Fairly Qualified')
+                            <span class="badge badge-info">Fairly Qualified</span>
+                        @elseif($app->qualification_status === 'Not Qualified')
                             <span class="badge badge-danger">Not Qualified</span>
                         @elseif($app->qualification_status === 'pending')
                             <span class="badge badge-warning">Pending</span>
                         @else
                             <span class="badge badge-secondary">{{ ucfirst($app->qualification_status) }}</span>
                         @endif
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        @if($app->processing_status === 'completed')
+                            <span class="badge badge-success">Completed</span>
+                        @elseif($app->processing_status === 'failed')
+                            <span class="badge badge-danger">Failed</span>
+                        @elseif($app->processing_status === 'processing')
+                            <span class="badge badge-info">Processing</span>
+                        @else
+                            <span class="badge badge-warning">Pending</span>
+                        @endif
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <a href="{{ route('admin.applications.cv.download', $app->id) }}" class="text-blue-600 hover:text-blue-800">
+                            Download
+                        </a>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {{ $app->created_at->diffForHumans() }}

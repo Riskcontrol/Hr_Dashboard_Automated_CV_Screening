@@ -4,7 +4,7 @@ namespace App\Jobs;
 
 use App\Models\Application;
 use App\Models\KeywordSet;
-use App\Services\CVProcessorService;
+use App\Services\GitHubActionsProcessorService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -20,48 +20,53 @@ class ProcessCVJob implements ShouldQueue
     public $tries = 3;
 
     protected $application;
-    protected $keywordSetId;
+    protected $keywordSet;
 
-    public function __construct(Application $application, ?int $keywordSetId = null)
+    public function __construct(Application $application, KeywordSet $keywordSet)
     {
         $this->application = $application;
-        $this->keywordSetId = $keywordSetId;
+        $this->keywordSet = $keywordSet;
     }
 
-    public function handle(CVProcessorService $processor)
+    public function handle(GitHubActionsProcessorService $processor)
     {
-        Log::info('Processing CV job started', [
-            'application_id' => $this->application->id,
-            'keyword_set_id' => $this->keywordSetId
-        ]);
-
-        $keywordSet = null;
-        if ($this->keywordSetId) {
-            $keywordSet = KeywordSet::find($this->keywordSetId);
+        if (!$this->keywordSet) {
+            $this->application->update(['processing_status' => 'failed']);
+            Log::error('CV processing job failed: KeywordSet is null.', [
+                'application_id' => $this->application->id,
+            ]);
+            $this->fail(new \Exception('KeywordSet is null.'));
+            return;
         }
 
-        $result = $processor->processApplication($this->application, $keywordSet);
+        $this->application->update([
+            'processing_status' => 'processing',
+            'processing_started_at' => now(),
+        ]);
 
-        if ($result['success']) {
-            Log::info('CV processing completed successfully', [
-                'application_id' => $this->application->id,
-                'qualified' => $this->application->fresh()->isQualified()
-            ]);
-        } else {
-            Log::error('CV processing failed', [
-                'application_id' => $this->application->id,
-                'error' => $result['error']
-            ]);
+        Log::info('Processing CV job started', [
+            'application_id' => $this->application->id,
+            'keyword_set_id' => $this->keywordSet->id
+        ]);
+
+        try {
+            $processor->processApplication($this->application, $this->keywordSet);
+            
+            // The GitHub action will notify the application of completion via a callback.
+            // We don't mark it as 'completed' here.
+
+        } catch (\Exception $e) {
+            $this->fail($e);
         }
     }
 
     public function failed(\Throwable $exception)
     {
+        $this->application->update(['processing_status' => 'failed']);
+
         Log::error('CV processing job failed completely', [
             'application_id' => $this->application->id,
             'error' => $exception->getMessage()
         ]);
-
-        $this->application->update(['qualification_status' => 'failed']);
     }
 }
