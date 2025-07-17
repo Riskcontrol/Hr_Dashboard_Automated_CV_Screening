@@ -118,6 +118,7 @@ use App\Services\FileUploadService;
 use App\Services\GitHubActionsProcessorService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use App\Jobs\ProcessCVJob;
 
 class ApplicationSubmissionController extends Controller
 {
@@ -171,22 +172,19 @@ class ApplicationSubmissionController extends Controller
                 'cv_stored_path' => $fileData['stored_path'],
                 'cv_file_size' => $fileData['file_size'],
                 'qualification_status' => 'pending',
-                'processing_status' => 'pending',
-                'processing_started_at' => now()
+                'keyword_set_id' => $request->job_position,
             ]);
 
             // Get keyword set
             $keywordSet = KeywordSet::find($request->job_position);
 
-            // Process with GitHub Actions
-            $result = $this->githubProcessor->processApplication($application, $keywordSet);
+            // Dispatch job to process CV
+            ProcessCVJob::dispatch($application, $keywordSet);
 
-            Log::info('New CV application submitted', [
+            Log::info('New CV application submitted and queued for processing', [
                 'application_id' => $application->id,
                 'applicant_email' => $application->applicant_email,
-                'keyword_set_id' => $keywordSet->id,
-                'processing_method' => 'github_actions',
-                'processing_result' => $result
+                'keyword_set_id' => $keywordSet->id
             ]);
 
             return redirect()->route('application.success', $application->id)

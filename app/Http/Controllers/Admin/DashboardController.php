@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Application;
 use App\Models\KeywordSet;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class DashboardController extends Controller
 {
@@ -15,6 +16,7 @@ class DashboardController extends Controller
         $stats = [
             'total_applications' => 0,
             'qualified_applications' => 0,
+            'fairly_qualified_applications' => 0,
             'pending_applications' => 0,
             'keyword_sets' => 0,
             'qualification_rate' => 0,
@@ -25,6 +27,7 @@ class DashboardController extends Controller
             if (\Illuminate\Support\Facades\Schema::hasTable('applications')) {
                 $stats['total_applications'] = Application::count();
                 $stats['qualified_applications'] = Application::where('qualification_status', 'qualified')->count();
+                $stats['fairly_qualified_applications'] = Application::where('qualification_status', 'Fairly Qualified')->count();
                 $stats['pending_applications'] = Application::where('qualification_status', 'pending')->count();
             }
 
@@ -33,12 +36,12 @@ class DashboardController extends Controller
             }
 
             $stats['qualification_rate'] = $stats['total_applications'] > 0 
-                ? round(($stats['qualified_applications'] / $stats['total_applications']) * 100, 2)
+                ? round((($stats['qualified_applications'] + $stats['fairly_qualified_applications']) / $stats['total_applications']) * 100, 2)
                 : 0;
 
         } catch (\Exception $e) {
             // If any database error occurs, keep default stats
-            \Log::info('Dashboard stats error: ' . $e->getMessage());
+            Log::info('Dashboard stats error: ' . $e->getMessage());
         }
 
         // Get recent applications if table exists
@@ -47,7 +50,6 @@ class DashboardController extends Controller
             if (\Illuminate\Support\Facades\Schema::hasTable('applications')) {
                 $recentApplications = Application::with('keywordSet')
                     ->latest()
-                    ->take(5)
                     ->get();
             }
         } catch (\Exception $e) {

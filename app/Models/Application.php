@@ -56,6 +56,11 @@ class Application extends Model
         return $this->qualification_status === 'qualified';
     }
 
+    public function isFairlyQualified()
+    {
+        return $this->qualification_status === 'Fairly Qualified';
+    }
+
     public function isPending()
     {
         return $this->qualification_status === 'pending';
@@ -69,6 +74,11 @@ class Application extends Model
     public function scopeNotQualified($query)
     {
         return $query->where('qualification_status', 'not_qualified');
+    }
+
+    public function scopeFairlyQualified($query)
+    {
+        return $query->where('qualification_status', 'Fairly Qualified');
     }
 
     public function scopePending($query)

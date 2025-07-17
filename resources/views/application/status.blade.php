@@ -75,18 +75,14 @@
                 @endif
             </div>
             @endif
-        @elseif($application->processing_status === 'pending')
-            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-8">
-                <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-yellow-100 mb-4">
-                    <i class="fas fa-clock text-yellow-600 text-3xl"></i>
+        @elseif($application->processing_status === 'pending' || $application->processing_status === 'processing')
+            <div class="bg-green-50 border border-green-200 rounded-lg p-8">
+                <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-4">
+                    <i class="fas fa-check-circle text-green-600 text-3xl"></i>
                 </div>
-                <h3 class="text-2xl font-bold text-yellow-900 mb-2">Processing Your Application</h3>
-                <p class="text-yellow-700 mb-4">Please wait while we analyze your CV. This usually takes 1-2 minutes.</p>
-                <div class="flex justify-center">
-                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-yellow-600"></div>
-                </div>
+                <h3 class="text-2xl font-bold text-green-900 mb-2">Application Received</h3>
+                <p class="text-green-700 mb-4">Thank you for your application. We have received your CV and will get back to you shortly.</p>
             </div>
-
         @elseif($application->processing_status === 'failed')
             <div class="bg-gray-50 border border-gray-200 rounded-lg p-8">
                 <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-gray-100 mb-4">
@@ -123,14 +119,4 @@
     </div>
 </div>
 
-@if($application->processing_status === 'pending')
-@push('scripts')
-<script>
-    // Auto-refresh pending applications every 10 seconds
-    setTimeout(function() {
-        window.location.reload();
-    }, 10000);
-</script>
-@endpush
-@endif
 @endsection

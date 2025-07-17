@@ -39,9 +39,11 @@ class CVProcessorService
             if ($keywordSet) {
                 $matchResult = $this->matchKeywords($extractedText, $keywordSet->keywords);
                 
+                $qualificationStatus = $this->determineQualificationStatus($matchResult['found_count'], $matchResult['total_keywords']);
+                
                 $application->update([
                     'keyword_set_id' => $keywordSet->id,
-                    'qualification_status' => $matchResult['qualified'] ? 'qualified' : 'not_qualified',
+                    'qualification_status' => $qualificationStatus,
                     'match_percentage' => $matchResult['match_percentage'],
                     'found_keywords' => $matchResult['found_keywords'],
                     'missing_keywords' => $matchResult['missing_keywords'],
@@ -164,10 +166,7 @@ class CVProcessorService
         $totalKeywords = count($keywords);
         $foundCount = count($foundKeywords);
         $matchPercentage = $totalKeywords > 0 ? ($foundCount / $totalKeywords) * 100 : 0;
-        $isQualified = $foundCount === $totalKeywords;
-
         return [
-            'qualified' => $isQualified,
             'match_percentage' => round($matchPercentage, 2),
             'found_keywords' => $foundKeywords,
             'missing_keywords' => $missingKeywords,
@@ -185,9 +184,11 @@ class CVProcessorService
         // If text already extracted, just re-run keyword matching
         $matchResult = $this->matchKeywords($application->extracted_text, $keywordSet->keywords);
         
+        $qualificationStatus = $this->determineQualificationStatus($matchResult['found_count'], $matchResult['total_keywords']);
+
         $application->update([
             'keyword_set_id' => $keywordSet->id,
-            'qualification_status' => $matchResult['qualified'] ? 'qualified' : 'not_qualified',
+            'qualification_status' => $qualificationStatus,
             'match_percentage' => $matchResult['match_percentage'],
             'found_keywords' => $matchResult['found_keywords'],
             'missing_keywords' => $matchResult['missing_keywords'],
@@ -198,5 +199,18 @@ class CVProcessorService
             'success' => true,
             'match_result' => $matchResult
         ];
+    }
+
+    private function determineQualificationStatus($foundCount, $totalKeywords)
+    {
+        if ($totalKeywords > 0 && $foundCount === $totalKeywords) {
+            return 'Qualified';
+        }
+
+        if ($foundCount >= 3) {
+            return 'Fairly Qualified';
+        }
+
+        return 'Not Qualified';
     }
 }

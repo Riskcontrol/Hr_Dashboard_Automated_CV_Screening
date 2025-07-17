@@ -86,11 +86,8 @@ class CVProcessingCallbackController extends Controller
     
     private function validateCallbackToken($token, $applicationId)
     {
-        // Validate the callback token (implement your validation logic)
-        $expectedToken = hash_hmac('sha256', $applicationId . now()->timestamp, config('app.key'));
-        
-        // In production, you might want to use a more sophisticated validation
-        // that accounts for time windows, etc.
+        // Validate the callback token
+        $expectedToken = hash_hmac('sha256', $applicationId, config('app.key'));
         return hash_equals($expectedToken, $token);
     }
 }

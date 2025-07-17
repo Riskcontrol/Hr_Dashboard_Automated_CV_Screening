@@ -7,6 +7,26 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
+## About This Project
+
+This is a CV screening application built with Laravel. It allows applicants to submit their CVs, which are then processed by a GitHub Action to match keywords for specific job positions.
+
+### Running the Application
+
+1.  **Install Dependencies:** `composer install` and `npm install`
+2.  **Set up Environment:** Copy `.env.example` to `.env` and configure your database. You will also need to add the following to your `.env` file:
+    ```
+    APP_URL=http://127.0.0.1:8000
+    GITHUB_TOKEN=your_personal_access_token
+    GITHUB_REPO_OWNER=your_github_username
+    GITHUB_REPO_NAME=your_repository_name
+    ```
+3.  **Run Migrations:** `php artisan migrate`
+4.  **Run the Development Server:** `php artisan serve`
+5.  **Run the Queue Worker:** `php artisan queue:work` (restart this after any code changes)
+
+This project uses Laravel's queue system to process CVs in the background. The queue worker is essential for the application to function correctly. **Important:** You must restart the queue worker after making any changes to the code to ensure it's running the latest version.
+
 ## About Laravel
 
 Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
