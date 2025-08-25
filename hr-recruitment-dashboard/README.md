@@ -79,3 +79,26 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+## Database
+
+This project expects a MySQL-compatible database. An example `.env.example` is provided and already configured to use a local MySQL database named `hr-recruitment-dashboard`.
+
+If you're using phpMyAdmin locally, create a database named `hr-recruitment-dashboard` (utf8mb4, collation `utf8mb4_unicode_ci`). Then copy `.env.example` to `.env` and update credentials if your MySQL user is not `root`:
+
+```bash
+cp .env.example .env
+# edit the following values in .env if necessary:
+# DB_USERNAME=your_mysql_user
+# DB_PASSWORD=your_mysql_password
+```
+
+Test the connection and run migrations:
+
+```bash
+composer install --no-interaction --prefer-dist
+php artisan key:generate
+php artisan migrate
+```
+
+If migrations run successfully, your app is connected to the `hr-recruitment-dashboard` database. You can also verify via phpMyAdmin.
