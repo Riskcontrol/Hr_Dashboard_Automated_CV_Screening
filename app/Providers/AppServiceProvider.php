@@ -23,5 +23,10 @@ class AppServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             URL::forceRootUrl(config('app.url'));
         }
+        
+        // Force HTTPS for URLs when APP_URL uses HTTPS
+        if (str_starts_with(config('app.url'), 'https://')) {
+            URL::forceScheme('https');
+        }
     }
 }
