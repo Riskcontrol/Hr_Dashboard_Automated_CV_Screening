@@ -54,16 +54,41 @@ GITHUB_REPO_NAME=Hr_Dashboard_Automated_CV_Screening
 3. Select scopes: `repo` and `actions:write`
 4. Copy token and add to `.env`
 
-### Step 4: Restart Queue Worker
+### Step 4: Start Queue Worker (Multiple Options)
+
+#### Option A: Using Queue Manager Script (Recommended)
 ```bash
-# Check if queue worker is running
-ps aux | grep queue:work
+# Edit queue-manager.sh and update PROJECT_DIR path
+nano queue-manager.sh
 
-# If using supervisord
-supervisorctl restart laravel-queue
+# Start queue worker
+./queue-manager.sh start
 
-# Or start manually
-nohup php artisan queue:work --daemon &
+# Check status
+./queue-manager.sh status
+```
+
+#### Option B: Simple Manual Run
+```bash
+# Run queue jobs immediately
+./run-queue.sh
+```
+
+#### Option C: Cron Job (Best for Shared Hosting)
+Add to cPanel cron jobs (runs every minute):
+```bash
+* * * * * cd /home/yourusername/public_html/your-project && php artisan queue:work --stop-when-empty --timeout=50 > /dev/null 2>&1
+```
+
+#### Option D: Laravel Scheduler + Cron
+Add single cron job:
+```bash
+* * * * * cd /home/yourusername/public_html/your-project && php artisan schedule:run >> /dev/null 2>&1
+```
+
+#### Option E: Manual Background Process
+```bash
+nohup php artisan queue:work --daemon --sleep=3 --tries=3 &
 ```
 
 ### Step 5: Test Fix
