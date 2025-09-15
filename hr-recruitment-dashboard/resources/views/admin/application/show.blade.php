@@ -173,35 +173,6 @@
                         </div>
                     @endif
 
-                    <!-- Processing Logs -->
-                    @if($application->processingLogs && $application->processingLogs->count() > 0)
-                        <div class="row mt-4">
-                            <div class="col-md-12">
-                                <h5>Processing Logs</h5>
-                                <div class="table-responsive">
-                                    <table class="table table-sm">
-                                        <thead>
-                                            <tr>
-                                                <th>Timestamp</th>
-                                                <th>Event</th>
-                                                <th>Details</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach($application->processingLogs as $log)
-                                                <tr>
-                                                    <td>{{ $log->created_at->format('Y-m-d H:i:s') }}</td>
-                                                    <td>{{ $log->event_type }}</td>
-                                                    <td>{{ $log->event_data ? json_encode($log->event_data) : 'N/A' }}</td>
-                                                </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    @endif
-
                     <!-- Actions -->
                     <div class="row mt-4">
                         <div class="col-md-12">

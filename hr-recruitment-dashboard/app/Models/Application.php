@@ -40,11 +40,6 @@ class Application extends Model
         return $this->belongsTo(KeywordSet::class);
     }
 
-    public function processingLogs()
-    {
-        return $this->hasMany(ProcessingLog::class);
-    }
-
     public function getFileSizeFormattedAttribute()
     {
         $bytes = $this->cv_file_size;
