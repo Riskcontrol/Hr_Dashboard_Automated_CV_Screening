@@ -3,31 +3,25 @@
 namespace App\Http\Controllers;
 
 use App\Models\Application;
-use App\Services\CVProcessorService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Exception;
 
 class CVProcessingCallbackController extends Controller
 {
-    protected $cvProcessorService;
-
-    public function __construct(CVProcessorService $cvProcessorService)
-    {
-        $this->cvProcessorService = $cvProcessorService;
-    }
-
     public function handleCallback(Request $request)
     {
-        // Log all incoming data for debugging
-        Log::info('CV processing callback received', [
-            'headers' => $request->headers->all(),
-            'body' => $request->all(),
-            'method' => $request->method(),
-            'url' => $request->fullUrl()
-        ]);
-
         try {
+            // Log all incoming data for debugging
+            Log::info('CV processing callback received', [
+                'headers' => $request->headers->all(),
+                'body' => $request->all(),
+                'method' => $request->method(),
+                'url' => $request->fullUrl(),
+                'ip' => $request->ip(),
+                'user_agent' => $request->userAgent()
+            ]);
+
             $applicationId = $request->input('application_id');
             $authToken = $request->bearerToken() ?? $request->input('auth_token');
             
