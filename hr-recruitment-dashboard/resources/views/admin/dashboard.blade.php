@@ -5,6 +5,10 @@
     <div class="flex justify-between items-center">
         <h1 class="text-3xl font-bold text-gray-900">Dashboard</h1>
         <div class="flex space-x-4">
+            <a href="{{ route('admin.applications.index') }}" class="btn btn-secondary">
+                <i class="fas fa-list mr-2"></i>
+                View All Applications
+            </a>
             <a href="{{ route('admin.keyword-sets.create') }}" class="btn btn-primary">
                 <i class="fas fa-plus mr-2"></i>
                 Add Position
@@ -93,6 +97,7 @@
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Processing Status</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">CV</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Submitted</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                 </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
@@ -138,6 +143,20 @@
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {{ $app->created_at->diffForHumans() }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <div class="flex space-x-2">
+                            <a href="{{ route('admin.applications.show', $app->id) }}" class="text-blue-600 hover:text-blue-800" title="View Details">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            <form method="POST" action="{{ route('admin.applications.destroy', $app->id) }}" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this application and CV file?')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="text-red-600 hover:text-red-800" title="Delete Application">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                        </div>
                     </td>
                 </tr>
                 @endforeach
