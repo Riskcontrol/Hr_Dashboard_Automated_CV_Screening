@@ -122,6 +122,4 @@ Route::get('/health', function () {
     ]);
 });
 
-// CV processing callback (should be protected)
-Route::post('/cv/processing/callback', [\App\Http\Controllers\CVProcessingCallbackController::class, 'handleCallback'])
-    ->name('cv.processing.callback');
+

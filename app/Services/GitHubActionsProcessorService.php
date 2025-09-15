@@ -27,7 +27,7 @@ class GitHubActionsProcessorService
         // Generate a temporary URL for the CV file
         $fileUrl = $this->generateTemporaryFileUrl($application->cv_stored_path);
         
-        // Generate callback URL
+        // Generate callback URL (API route, no CSRF)
         $callbackUrl = route('cv.processing.callback');
         
         // Generate authentication token for callback
