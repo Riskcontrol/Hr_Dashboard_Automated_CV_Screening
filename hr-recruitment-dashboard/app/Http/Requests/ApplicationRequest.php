@@ -36,7 +36,7 @@ class ApplicationRequest extends FormRequest
                 'required',
                 'file',
                 'mimes:pdf,doc,docx',
-                'max:10240', // 10MB
+                'max:3072', // 3MB
                 'uploaded'
             ],
             'job_position' => [
@@ -53,7 +53,7 @@ class ApplicationRequest extends FormRequest
             'applicant_email.unique' => 'This email has already submitted an application.',
             'phone.regex' => 'Please enter a valid phone number.',
             'cv_file.mimes' => 'Only PDF, DOC, and DOCX files are allowed.',
-            'cv_file.max' => 'File size must not exceed 10MB.',
+            'cv_file.max' => 'File size must not exceed 3MB.',
             'job_position.exists' => 'Selected job position is not available.'
         ];
     }
