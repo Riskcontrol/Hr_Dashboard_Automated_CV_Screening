@@ -41,7 +41,7 @@ class ApplicationController extends Controller
 
     public function show(Application $application)
     {
-        $application->load('keywordSet', 'processingLogs');
+        $application->load('keywordSet');
         return view('admin.application.show', compact('application'));
     }
 
@@ -54,7 +54,7 @@ class ApplicationController extends Controller
         $keywordSet = KeywordSet::findOrFail($request->keyword_set_id);
 
         // Queue the reprocessing job
-        ProcessCVJob::dispatch($application, $keywordSet->id);
+        ProcessCVJob::dispatch($application, $keywordSet);
 
         return redirect()->back()
             ->with('success', 'CV reprocessing has been queued. Please refresh the page in a moment to see results.');
@@ -108,7 +108,7 @@ class ApplicationController extends Controller
             $keywordSet = KeywordSet::findOrFail($request->keyword_set_id);
             
             foreach ($applications as $application) {
-                ProcessCVJob::dispatch($application, $keywordSet->id);
+                ProcessCVJob::dispatch($application, $keywordSet);
             }
             $message = count($applications) . ' applications queued for reprocessing!';
         }

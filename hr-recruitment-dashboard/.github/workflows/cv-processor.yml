@@ -1,0 +1,51 @@
+name: CV Processor
+
+on:
+  workflow_dispatch:
+    inputs:
+      file_url:
+        description: 'URL to download the CV file'
+        required: true
+        type: string
+      application_id:
+        description: 'Application ID for the CV'
+        required: true
+        type: string
+      callback_url:
+        description: 'Callback URL to send results'
+        required: true
+        type: string
+      auth_token:
+        description: 'Authentication token for callback'
+        required: true
+        type: string
+
+jobs:
+  process-cv:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+        
+    - name: Install Python dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install PyPDF2 pdfplumber python-docx requests
+        # Install additional tools for DOC files
+        sudo apt-get update
+        sudo apt-get install -y antiword
+        
+    - name: Process CV
+      run: |
+        cd github-scripts
+        python process_cv_improved.py \
+          "${{ inputs.file_url }}" \
+          "${{ inputs.application_id }}" \
+          "${{ inputs.callback_url }}" \
+          "${{ inputs.auth_token }}"
