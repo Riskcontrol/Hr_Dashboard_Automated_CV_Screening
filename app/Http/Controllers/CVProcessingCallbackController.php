@@ -51,27 +51,66 @@ class CVProcessingCallbackController extends Controller
             
             // Check if we have extracted text (indicates successful processing)
             $extractedText = $request->input('extracted_text');
-            $qualification = $request->input('qualification');
-            $score = $request->input('score');
-            $matchedKeywords = $request->input('matched_keywords', []);
-            $processingLog = $request->input('processing_log');
+            $success = $request->input('success', false);
             $error = $request->input('error');
             
-            if ($extractedText && !$error) {
-                // Processing was successful
-                Log::info('Processing successful, updating application', [
+            Log::info('Callback payload analysis', [
+                'application_id' => $applicationId,
+                'has_extracted_text' => !empty($extractedText),
+                'success_flag' => $success,
+                'has_error' => !empty($error),
+                'text_length' => $extractedText ? strlen($extractedText) : 0
+            ]);
+            
+            if ($success && $extractedText && !$error) {
+                // Processing was successful - now perform keyword matching
+                Log::info('Processing successful, performing keyword matching', [
                     'application_id' => $applicationId,
-                    'text_length' => strlen($extractedText),
-                    'qualification' => $qualification,
-                    'score' => $score
+                    'text_length' => strlen($extractedText)
                 ]);
+                
+                // Perform keyword matching if we have a keyword set
+                $qualification = 'not_qualified';
+                $score = 0;
+                $matchedKeywords = [];
+                $missingKeywords = [];
+                
+                if ($application->keywordSet && $application->keywordSet->keywords) {
+                    $keywords = $application->keywordSet->keywords;
+                    if (is_string($keywords)) {
+                        $keywords = json_decode($keywords, true) ?: [];
+                    }
+                    
+                    // Convert text to lowercase for case-insensitive matching
+                    $textLower = strtolower($extractedText);
+                    
+                    foreach ($keywords as $keyword) {
+                        if (is_string($keyword) && stripos($textLower, strtolower($keyword)) !== false) {
+                            $matchedKeywords[] = $keyword;
+                        }
+                    }
+                    
+                    $missingKeywords = array_diff($keywords, $matchedKeywords);
+                    
+                    // Calculate match percentage
+                    $totalKeywords = count($keywords);
+                    if ($totalKeywords > 0) {
+                        $score = count($matchedKeywords) / $totalKeywords;
+                        
+                        // Qualify if match percentage is >= 50%
+                        if ($score >= 0.5) {
+                            $qualification = 'qualified';
+                        }
+                    }
+                }
                 
                 // Update application with extracted text and results
                 $application->update([
                     'extracted_text' => $extractedText,
-                    'qualification_status' => $qualification === 'qualified' ? 'qualified' : 'not_qualified',
-                    'match_percentage' => $score ? ($score * 100) : null, // Convert score to percentage
-                    'found_keywords' => is_array($matchedKeywords) ? json_encode($matchedKeywords) : $matchedKeywords,
+                    'qualification_status' => $qualification,
+                    'match_percentage' => round($score * 100, 2),
+                    'found_keywords' => json_encode($matchedKeywords),
+                    'missing_keywords' => json_encode($missingKeywords),
                     'processing_status' => 'completed',
                     'processed_at' => now()
                 ]);
@@ -79,8 +118,9 @@ class CVProcessingCallbackController extends Controller
                 Log::info('CV processing completed via GitHub Actions', [
                     'application_id' => $application->id,
                     'qualification_status' => $qualification,
-                    'score' => $score,
-                    'matched_keywords_count' => is_array($matchedKeywords) ? count($matchedKeywords) : 0
+                    'match_percentage' => round($score * 100, 2),
+                    'matched_keywords_count' => count($matchedKeywords),
+                    'missing_keywords_count' => count($missingKeywords)
                 ]);
                 
             } else {
