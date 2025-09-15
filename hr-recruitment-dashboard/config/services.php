@@ -19,6 +19,16 @@ return [
         'repo' => env('GITHUB_REPO_NAME'),
     ],
 
+    'gemini' => [
+        'api_key' => env('GEMINI_API_KEY'),
+    ],
+
+    'github' => [
+        'token' => env('GITHUB_TOKEN'),
+        'repo_owner' => env('GITHUB_REPO_OWNER'),
+        'repo_name' => env('GITHUB_REPO_NAME'),
+    ],
+
     'postmark' => [
         'token' => env('POSTMARK_TOKEN'),
     ],

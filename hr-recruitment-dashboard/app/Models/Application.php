@@ -25,6 +25,12 @@ class Application extends Model
         'processed_at',
         'processing_status',
         'processing_started_at',
+        'ai_evaluation',
+        'ai_score',
+        'ai_strengths',
+        'ai_weaknesses',
+        'ai_recommendation',
+        'ai_evaluated_at',
     ];
 
     protected $casts = [
@@ -33,6 +39,9 @@ class Application extends Model
         'match_percentage' => 'decimal:2',
         'processed_at' => 'datetime',
         'processing_started_at' => 'datetime',
+        'ai_strengths' => 'array',
+        'ai_weaknesses' => 'array',
+        'ai_evaluated_at' => 'datetime',
     ];
 
     public function keywordSet()
