@@ -78,11 +78,31 @@
                                 </tr>
                                 <tr>
                                     <td><strong>Processing Started:</strong></td>
-                                    <td>{{ $application->processing_started_at ? $application->processing_started_at->format('Y-m-d H:i:s') : 'Not started' }}</td>
+                                    <td>
+                                        @if($application->processing_started_at)
+                                            @if(is_string($application->processing_started_at))
+                                                {{ $application->processing_started_at }}
+                                            @else
+                                                {{ $application->processing_started_at->format('Y-m-d H:i:s') }}
+                                            @endif
+                                        @else
+                                            Not started
+                                        @endif
+                                    </td>
                                 </tr>
                                 <tr>
                                     <td><strong>Processed At:</strong></td>
-                                    <td>{{ $application->processed_at ? $application->processed_at->format('Y-m-d H:i:s') : 'Not completed' }}</td>
+                                    <td>
+                                        @if($application->processed_at)
+                                            @if(is_string($application->processed_at))
+                                                {{ $application->processed_at }}
+                                            @else
+                                                {{ $application->processed_at->format('Y-m-d H:i:s') }}
+                                            @endif
+                                        @else
+                                            Not completed
+                                        @endif
+                                    </td>
                                 </tr>
                             </table>
                         </div>
