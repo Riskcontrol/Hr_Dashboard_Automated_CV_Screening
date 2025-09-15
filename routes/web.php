@@ -93,6 +93,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     
     // Keyword Sets Management
     Route::resource('keyword-sets', KeywordSetController::class);
+    Route::patch('/keyword-sets/{keywordSet}/toggle-status', [KeywordSetController::class, 'toggleStatus'])->name('keyword-sets.toggle-status');
     
     // Applications Management
     Route::get('/applications', [ApplicationController::class, 'index'])->name('applications.index');
