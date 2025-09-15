@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Application;
+use App\Services\GeminiAIService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Exception;
@@ -115,6 +116,9 @@ class CVProcessingCallbackController extends Controller
                     'processed_at' => now()
                 ]);
                 
+                // Perform AI evaluation
+                $this->performAIEvaluation($application, $extractedText);
+                
                 Log::info('CV processing completed via GitHub Actions', [
                     'application_id' => $application->id,
                     'qualification_status' => $qualification,
@@ -163,5 +167,64 @@ class CVProcessingCallbackController extends Controller
         // Validate the callback token
         $expectedToken = hash_hmac('sha256', $applicationId, config('app.key'));
         return hash_equals($expectedToken, $token);
+    }
+
+    private function performAIEvaluation(Application $application, $extractedText)
+    {
+        try {
+            if (!config('services.gemini.api_key')) {
+                Log::info('Gemini API key not configured, skipping AI evaluation');
+                return;
+            }
+
+            $geminiService = new GeminiAIService();
+            $keywords = [];
+            $jobTitle = 'Position';
+
+            if ($application->keywordSet) {
+                $keywords = $application->keywordSet->keywords ?: [];
+                $jobTitle = $application->keywordSet->job_title ?: 'Position';
+            }
+
+            Log::info('Starting AI evaluation', [
+                'application_id' => $application->id,
+                'job_title' => $jobTitle,
+                'keywords_count' => count($keywords)
+            ]);
+
+            $aiResult = $geminiService->evaluateCV(
+                $extractedText,
+                $jobTitle,
+                $keywords,
+                $application->applicant_name
+            );
+
+            if ($aiResult) {
+                $application->update([
+                    'ai_evaluation' => $aiResult['evaluation'],
+                    'ai_score' => $aiResult['score'],
+                    'ai_strengths' => $aiResult['strengths'],
+                    'ai_weaknesses' => $aiResult['weaknesses'],
+                    'ai_recommendation' => $aiResult['recommendation'],
+                    'ai_evaluated_at' => now()
+                ]);
+
+                Log::info('AI evaluation completed', [
+                    'application_id' => $application->id,
+                    'ai_score' => $aiResult['score'],
+                    'recommendation' => $aiResult['recommendation']
+                ]);
+            } else {
+                Log::warning('AI evaluation failed', [
+                    'application_id' => $application->id
+                ]);
+            }
+
+        } catch (Exception $e) {
+            Log::error('AI evaluation error', [
+                'application_id' => $application->id,
+                'error' => $e->getMessage()
+            ]);
+        }
     }
 }
