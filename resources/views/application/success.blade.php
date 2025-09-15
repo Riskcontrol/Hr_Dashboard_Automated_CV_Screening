@@ -55,7 +55,6 @@
                     <div class="text-blue-700 space-y-2">
                         <p>• Your CV is being processed and screened against job requirements</p>
                         <p>• You'll receive an email notification once processing is complete</p>
-                        <p>• Processing typically takes 1-2 minutes</p>
                         <p>• You can check your application status anytime using the link below</p>
                     </div>
                 </div>
@@ -81,20 +80,10 @@
         <div class="mt-8 text-center">
             <p class="text-sm text-gray-500">
                 Questions? Contact us at 
-                <a href="mailto:hr@riskcontrol.ng" class="text-blue-600 hover:text-blue-800">hr@riskcontrol.ng</a>
+                <a href="mailto:hr@riskcontolnigeria.com" class="text-blue-600 hover:text-blue-800">hr@riskcontolnigeria.com</a>
             </p>
         </div>
     </div>
 </div>
 
-@push('scripts')
-<script>
-    // Auto-refresh to status page after 30 seconds
-    setTimeout(function() {
-        if (confirm('Would you like to check your application status now?')) {
-            window.location.href = '{{ route('application.status', $application->id) }}';
-        }
-    }, 30000);
-</script>
-@endpush
 @endsection

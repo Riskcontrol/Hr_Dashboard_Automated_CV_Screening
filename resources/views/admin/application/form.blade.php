@@ -127,17 +127,6 @@
                     @enderror
                 </div>
 
-                <!-- Information Alert -->
-                <div class="alert alert-info mb-6">
-                    <div class="flex">
-                        <i class="fas fa-info-circle mr-3 mt-0.5"></i>
-                        <div>
-                            <p class="font-semibold">How it works:</p>
-                            <p>Your CV will be automatically screened against job requirements. You'll receive instant feedback on your qualification status.</p>
-                        </div>
-                    </div>
-                </div>
-
                 <!-- Submit Button -->
                 <div class="text-center">
                     <button type="submit" 
