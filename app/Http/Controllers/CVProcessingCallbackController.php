@@ -19,68 +19,108 @@ class CVProcessingCallbackController extends Controller
 
     public function handleCallback(Request $request)
     {
+        // Log all incoming data for debugging
+        Log::info('CV processing callback received', [
+            'headers' => $request->headers->all(),
+            'body' => $request->all(),
+            'method' => $request->method(),
+            'url' => $request->fullUrl()
+        ]);
+
         try {
-            // Validate the callback
-            $authToken = $request->bearerToken();
             $applicationId = $request->input('application_id');
+            $authToken = $request->bearerToken() ?? $request->input('auth_token');
+            
+            if (!$applicationId) {
+                Log::error('Missing application_id in callback');
+                return response()->json(['error' => 'Missing application_id'], 400);
+            }
+            
+            if (!$authToken) {
+                Log::error('Missing auth token in callback');
+                return response()->json(['error' => 'Missing auth token'], 401);
+            }
             
             if (!$this->validateCallbackToken($authToken, $applicationId)) {
+                Log::error('Invalid callback token', [
+                    'application_id' => $applicationId,
+                    'provided_token' => $authToken
+                ]);
                 return response()->json(['error' => 'Invalid token'], 401);
             }
             
-            $application = Application::with('keywordSet')->findOrFail($applicationId);
+            $application = Application::with('keywordSet')->find($applicationId);
+            if (!$application) {
+                Log::error('Application not found', ['application_id' => $applicationId]);
+                return response()->json(['error' => 'Application not found'], 404);
+            }
             
-            if ($request->input('success')) {
+            // Check if we have extracted text (indicates successful processing)
+            $extractedText = $request->input('extracted_text');
+            $qualification = $request->input('qualification');
+            $score = $request->input('score');
+            $matchedKeywords = $request->input('matched_keywords', []);
+            $processingLog = $request->input('processing_log');
+            $error = $request->input('error');
+            
+            if ($extractedText && !$error) {
                 // Processing was successful
-                $extractedText = $request->input('extracted_text');
+                Log::info('Processing successful, updating application', [
+                    'application_id' => $applicationId,
+                    'text_length' => strlen($extractedText),
+                    'qualification' => $qualification,
+                    'score' => $score
+                ]);
                 
-                // Update application with extracted text
-                $application->update(['extracted_text' => $extractedText]);
+                // Update application with extracted text and results
+                $application->update([
+                    'extracted_text' => $extractedText,
+                    'qualification_status' => $qualification === 'qualified' ? 'qualified' : 'not_qualified',
+                    'match_percentage' => $score ? ($score * 100) : null, // Convert score to percentage
+                    'found_keywords' => is_array($matchedKeywords) ? json_encode($matchedKeywords) : $matchedKeywords,
+                    'processing_status' => 'completed',
+                    'processed_at' => now()
+                ]);
                 
-                // Perform keyword matching
-                if ($application->keywordSet) {
-                    $matchResult = $this->cvProcessorService->matchKeywords($extractedText, $application->keywordSet->keywords);
-                    
-                    $application->update([
-                        'qualification_status' => $matchResult['qualified'] ? 'qualified' : 'not_qualified',
-                        'match_percentage' => $matchResult['match_percentage'],
-                        'found_keywords' => $matchResult['found_keywords'],
-                        'missing_keywords' => $matchResult['missing_keywords'],
-                        'processed_at' => now(),
-                        'processing_status' => 'completed'
-                    ]);
-                    
-                    Log::info('CV processing completed via GitHub Actions', [
-                        'application_id' => $application->id,
-                        'qualified' => $matchResult['qualified'],
-                        'match_percentage' => $matchResult['match_percentage']
-                    ]);
-                }
+                Log::info('CV processing completed via GitHub Actions', [
+                    'application_id' => $application->id,
+                    'qualification_status' => $qualification,
+                    'score' => $score,
+                    'matched_keywords_count' => is_array($matchedKeywords) ? count($matchedKeywords) : 0
+                ]);
+                
             } else {
                 // Processing failed
-                $error = $request->input('error', 'Unknown error');
+                $errorMessage = $error ?: 'No extracted text received';
                 
                 $application->update([
                     'qualification_status' => 'failed',
-                    'processing_error' => $error,
+                    'processing_error' => $errorMessage,
                     'processing_status' => 'failed'
                 ]);
                 
                 Log::error('CV processing failed via GitHub Actions', [
                     'application_id' => $application->id,
-                    'error' => $error
+                    'error' => $errorMessage
                 ]);
             }
             
-            return response()->json(['success' => true]);
+            return response()->json([
+                'success' => true,
+                'message' => 'Callback processed successfully',
+                'application_id' => $applicationId
+            ]);
             
         } catch (Exception $e) {
             Log::error('Callback processing error', [
                 'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
                 'request_data' => $request->all()
             ]);
             
-            return response()->json(['error' => 'Callback processing failed'], 500);
+            return response()->json([
+                'error' => 'Callback processing failed: ' . $e->getMessage()
+            ], 500);
         }
     }
     

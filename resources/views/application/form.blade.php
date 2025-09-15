@@ -110,7 +110,7 @@
                             <p class="text-gray-500 mb-4">or click to browse files</p>
                             <div class="file-name-display text-primary-600 font-semibold"></div>
                             <p class="text-sm text-gray-400 mt-2">
-                                Supported formats: PDF, DOC, DOCX (Max size: 10MB)
+                                Supported formats: PDF, DOC, DOCX (Max size: 3MB)
                             </p>
                         </div>
                     </div>
@@ -212,10 +212,10 @@
         }
 
         function validateAndDisplayFile(file) {
-            // File size validation (10MB)
-            const maxSize = 10 * 1024 * 1024;
+            // File size validation (3MB)
+            const maxSize = 3 * 1024 * 1024;
             if (file.size > maxSize) {
-                alert('File size must not exceed 10MB');
+                alert('File size must not exceed 3MB');
                 fileInput.value = '';
                 fileNameDisplay.textContent = '';
                 return;

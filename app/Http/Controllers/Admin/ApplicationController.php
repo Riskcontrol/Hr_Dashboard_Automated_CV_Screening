@@ -62,12 +62,15 @@ class ApplicationController extends Controller
 
     public function downloadCV(Application $application)
     {
-        $filePath = storage_path('app/' . $application->cv_stored_path);
-        
-        if (!file_exists($filePath)) {
+        // Check if file exists using Laravel Storage
+        if (!Storage::disk('local')->exists($application->cv_stored_path)) {
             return redirect()->back()->with('error', 'CV file not found!');
         }
 
+        // Get the full file path
+        $filePath = Storage::disk('local')->path($application->cv_stored_path);
+        
+        // Return file download response
         return response()->download($filePath, $application->cv_original_name);
     }
 
