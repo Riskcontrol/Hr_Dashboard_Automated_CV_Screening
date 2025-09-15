@@ -32,6 +32,7 @@ class Application extends Model
         'missing_keywords' => 'array',
         'match_percentage' => 'decimal:2',
         'processed_at' => 'datetime',
+        'processing_started_at' => 'datetime',
     ];
 
     public function keywordSet()
