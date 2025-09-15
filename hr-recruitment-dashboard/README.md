@@ -21,6 +21,8 @@ This is a CV screening application built with Laravel. It allows applicants to s
     GITHUB_REPO_OWNER=your_github_username
     GITHUB_REPO_NAME=your_repository_name
     ```
+    
+    **Important:** The GitHub token is required for CV processing. Generate a Personal Access Token with `actions:write` and `repo` permissions from GitHub Settings > Developer settings > Personal access tokens.
 3.  **Run Migrations:** `php artisan migrate`
 4.  **Run the Development Server:** `php artisan serve`
 5.  **Run the Queue Worker:** `php artisan queue:work` (restart this after any code changes)
@@ -102,3 +104,28 @@ php artisan migrate
 ```
 
 If migrations run successfully, your app is connected to the `hr-recruitment-dashboard` database. You can also verify via phpMyAdmin.
+
+## Troubleshooting
+
+### CV Processing Issues
+If CVs remain "pending" after submission:
+
+1. **Check queue worker is running:**
+   ```bash
+   php artisan queue:work --once
+   ```
+
+2. **Ensure GitHub configuration is set:**
+   ```bash
+   # Add to your .env file:
+   GITHUB_TOKEN=your_github_personal_access_token
+   GITHUB_REPO_OWNER=Riskcontrol
+   GITHUB_REPO_NAME=Hr_Dashboard_Automated_CV_Screening
+   ```
+
+3. **Run the diagnostic script:**
+   ```bash
+   ./diagnose-cv-processing.sh
+   ```
+
+See `TROUBLESHOOTING.md` and `PRODUCTION_FIX.md` for detailed guidance.
