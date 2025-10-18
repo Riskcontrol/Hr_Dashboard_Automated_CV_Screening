@@ -7,11 +7,14 @@
 
         <title>{{ config('app.name', 'HR Dashboard') }} - Professional Recruitment Platform</title>
 
-        <!-- Fonts -->
+    <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <!-- Override favicon to remove Laravel logo -->
+    <link rel="icon" href="data:,">
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -21,7 +24,8 @@
                 font-family: 'Inter', sans-serif;
             }
             .bg-gradient-premium {
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                /* Brand teal #00897B gradient */
+                background: linear-gradient(135deg, #00897B 0%, #00A091 100%);
             }
             .bg-gradient-card {
                 background: rgba(255, 255, 255, 0.95);
@@ -37,18 +41,18 @@
                 transition: all 0.3s ease;
             }
             .form-input-premium:focus {
-                border-color: #667eea;
-                box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+                border-color: #00897B; /* brand */
+                box-shadow: 0 0 0 3px rgba(0, 137, 123, 0.15);
                 background: rgba(255, 255, 255, 1);
             }
             .btn-premium {
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                background: linear-gradient(135deg, #00897B 0%, #00A091 100%);
                 transition: all 0.3s ease;
-                box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+                box-shadow: 0 4px 15px rgba(0, 137, 123, 0.35);
             }
             .btn-premium:hover {
                 transform: translateY(-2px);
-                box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+                box-shadow: 0 8px 25px rgba(0, 137, 123, 0.55);
             }
             .floating-animation {
                 animation: float 6s ease-in-out infinite;
@@ -59,14 +63,14 @@
             }
         </style>
     </head>
-    <body class="font-sans antialiased bg-gradient-premium min-h-screen">
-        <div class="min-h-screen flex flex-col lg:flex-row">
+    <body class="font-sans antialiased bg-gradient-premium min-h-screen relative">
+        <div class="min-h-screen flex flex-col lg:flex-row relative z-10">
             <!-- Left Side - Branding & Info -->
             <div class="lg:w-1/2 flex items-center justify-center p-8 lg:p-16">
                 <div class="text-center text-white max-w-md">
                     <div class="floating-animation mb-8">
                         <div class="w-24 h-24 mx-auto mb-6 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
-                            <i class="fas fa-users-gear text-4xl text-white"></i>
+                            <i class="fas fa-users-gear text-4xl text-green-200"></i>
                         </div>
                     </div>
                     
@@ -78,15 +82,15 @@
                     </p>
                     <div class="space-y-3 text-white/80">
                         <div class="flex items-center justify-center">
-                            <i class="fas fa-robot mr-3 text-blue-200"></i>
+                            <i class="fas fa-robot mr-3 text-green-200"></i>
                             <span>AI-Powered CV Analysis</span>
                         </div>
                         <div class="flex items-center justify-center">
-                            <i class="fas fa-chart-line mr-3 text-blue-200"></i>
+                            <i class="fas fa-chart-line mr-3 text-green-200"></i>
                             <span>Advanced Analytics & Insights</span>
                         </div>
                         <div class="flex items-center justify-center">
-                            <i class="fas fa-shield-alt mr-3 text-blue-200"></i>
+                            <i class="fas fa-shield-alt mr-3 text-green-200"></i>
                             <span>Secure & Reliable Platform</span>
                         </div>
                     </div>
@@ -94,9 +98,9 @@
             </div>
 
             <!-- Right Side - Login Form -->
-            <div class="lg:w-1/2 flex items-center justify-center p-8 lg:p-16">
-                <div class="w-full max-w-md">
-                    <div class="bg-gradient-card shadow-premium rounded-2xl p-8 lg:p-10">
+            <div class="lg:w-1/2 flex items-center justify-center p-8 lg:p-16 relative z-50 pointer-events-auto">
+                <div class="w-full max-w-md relative z-50 pointer-events-auto">
+                    <div class="bg-gradient-card shadow-premium rounded-2xl p-8 lg:p-10 relative z-50 pointer-events-auto">
                         {{ $slot }}
                     </div>
                 </div>
@@ -104,7 +108,7 @@
         </div>
 
         <!-- Background decoration -->
-        <div class="fixed inset-0 overflow-hidden pointer-events-none">
+    <div class="fixed inset-0 overflow-hidden pointer-events-none -z-10">
             <div class="absolute top-10 left-10 w-20 h-20 bg-white/10 rounded-full"></div>
             <div class="absolute top-32 right-16 w-16 h-16 bg-white/5 rounded-full"></div>
             <div class="absolute bottom-20 left-20 w-24 h-24 bg-white/5 rounded-full"></div>

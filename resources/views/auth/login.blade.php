@@ -60,7 +60,7 @@
             </label>
 
             @if (Route::has('password.request'))
-                <a class="text-sm text-blue-600 hover:text-blue-800 font-medium transition-colors duration-200" 
+                <a class="text-sm" style="color:#00897B" onmouseover="this.style.color='#00695C'" onmouseout="this.style.color='#00897B'" 
                    href="{{ route('password.request') }}">
                     Forgot password?
                 </a>
@@ -69,22 +69,14 @@
 
         <!-- Login Button -->
         <div class="pt-4">
-            <button type="submit" 
-                    class="btn-premium w-full text-white font-semibold py-3 px-6 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-300 text-lg">
+        <button type="submit" 
+            class="btn-premium w-full text-white font-semibold py-3 px-6 rounded-xl focus:outline-none text-lg"
+            style="background:#00897B">
                 <i class="fas fa-sign-in-alt mr-2"></i>Sign In
             </button>
         </div>
 
-        <!-- Additional Links -->
-        @if (Route::has('register'))
-            <div class="text-center pt-6 border-t border-gray-200">
-                <p class="text-gray-600 mb-3">Don't have an account?</p>
-                <a href="{{ route('register') }}" 
-                   class="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium transition-colors duration-200">
-                    <i class="fas fa-user-plus mr-2"></i>Create New Account
-                </a>
-            </div>
-        @endif
+        <!-- Additional Links Removed -->
     </form>
 
     <script>
