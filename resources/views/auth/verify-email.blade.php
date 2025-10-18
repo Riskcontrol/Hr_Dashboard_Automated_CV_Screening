@@ -14,7 +14,7 @@
             @csrf
 
             <div>
-                <x-primary-button>
+                <x-primary-button class="btn-premium" style="background:#00897B; border-color:#00897B">
                     {{ __('Resend Verification Email') }}
                 </x-primary-button>
             </div>
@@ -23,7 +23,7 @@
         <form method="POST" action="{{ route('logout') }}">
             @csrf
 
-            <button type="submit" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+            <button type="submit" class="underline text-sm" style="color:#00897B" onmouseover="this.style.color='#00695C'" onmouseout="this.style.color='#00897B'">
                 {{ __('Log Out') }}
             </button>
         </form>
