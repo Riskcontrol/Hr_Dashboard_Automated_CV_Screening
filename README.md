@@ -9,7 +9,7 @@
 
 ## About This Project
 
-This is a CV screening application built with Laravel. It allows applicants to submit their CVs, which are then processed by a GitHub Action to match keywords for specific job positions.
+This is a CV screening application built with Laravel. It allows applicants to submit their CVs, which are then processed by a GitHub Action to match keywords for specific job positions....
 
 ### Running the Application
 
