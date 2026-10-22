@@ -63,6 +63,13 @@
                             </li>
 
                             <li>
+                                <a href="{{ route('admin.kpis.index') }}"
+                                   class="nav-link {{ request()->routeIs('admin.kpis.*') ? 'active' : '' }}">
+                                    <i class="fas fa-chart-line mr-3"></i> KPI Tracking
+                                </a>
+                            </li>
+
+                            <li>
                                 <a href="{{ route('admin.compliance.index') }}"
                                    class="nav-link {{ request()->routeIs('admin.compliance.*') ? 'active' : '' }}">
                                     <i class="fas fa-shield-alt mr-3"></i> Compliance

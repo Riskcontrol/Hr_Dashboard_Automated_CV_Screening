@@ -43,6 +43,14 @@ class PensionController extends Controller
         return view('admin.pension.index', compact('records', 'stats', 'staffWithoutPension'));
     }
 
+    public function create()
+    {
+        $staffWithoutPension = StaffProfile::where('status', 'active')
+            ->doesntHave('pensionRecord')->orderBy('full_name')->get();
+
+        return view('admin.pension.create', compact('staffWithoutPension'));
+    }
+
     public function store(Request $request)
     {
         $validated = $request->validate([

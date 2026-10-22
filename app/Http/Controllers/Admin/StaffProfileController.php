@@ -42,7 +42,7 @@ class StaffProfileController extends Controller
             'this_month' => StaffProfile::whereMonth('created_at', now()->month)->count(),
         ];
 
-        return view('admin.staff.index', compact('staff', 'departments', 'stats'));
+        return view('admin.Staff.index', compact('staff', 'departments', 'stats'));
     }
 
     public function create(Request $request)
@@ -55,7 +55,7 @@ class StaffProfileController extends Controller
         $nextId         = StaffProfile::generateEmployeeId();
         $availableUsers = \App\Models\User::whereDoesntHave('staffProfile')->orderBy('name')->get();
 
-        return view('admin.staff.create', compact('application', 'nextId', 'availableUsers'));
+        return view('admin.Staff.create', compact('application', 'nextId', 'availableUsers'));
     }
 
     public function store(Request $request)
@@ -111,7 +111,7 @@ class StaffProfileController extends Controller
     public function show(StaffProfile $staff)
     {
         $staff->load('application');
-        return view('admin.staff.show', compact('staff'));
+        return view('admin.Staff.show', compact('staff'));
     }
 
     public function edit(StaffProfile $staff)
@@ -121,7 +121,7 @@ class StaffProfileController extends Controller
               ->orWhere('id', $staff->user_id);
         })->orderBy('name')->get();
 
-        return view('admin.staff.edit', compact('staff', 'availableUsers'));
+        return view('admin.Staff.edit', compact('staff', 'availableUsers'));
     }
 
     public function update(Request $request, StaffProfile $staff)

@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\ApplicationController;
 use App\Http\Controllers\Admin\StaffProfileController;
 use App\Http\Controllers\Admin\LeaveRequestController;
 use App\Http\Controllers\Admin\ComplianceController;
+use App\Http\Controllers\Admin\KpiController;
 use App\Http\Controllers\Admin\AppraisalController;
 use App\Http\Controllers\Admin\AppraisalScheduleController;
 use App\Http\Controllers\Admin\AttendanceController;
@@ -35,6 +36,12 @@ Route::get('/application/success/{application}', [ApplicationSubmissionControlle
 Route::get('/application/status/{application}', [ApplicationSubmissionController::class, 'status'])->name('application.status');
 
 require __DIR__.'/auth.php';
+
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
 
 // -----------------------------------------------------------------------
 // STAFF PORTAL ROUTES
@@ -84,6 +91,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::resource('leave', LeaveRequestController::class);
     Route::post('/leave/{leave}/approve', [LeaveRequestController::class, 'approve'])->name('leave.approve');
     Route::post('/leave/{leave}/reject',  [LeaveRequestController::class, 'reject'])->name('leave.reject');
+
+    // Module 3: KPI Tracking
+    Route::resource('kpis', KpiController::class);
 
     // Module 4: Compliance Tracking
     Route::resource('compliance', ComplianceController::class);

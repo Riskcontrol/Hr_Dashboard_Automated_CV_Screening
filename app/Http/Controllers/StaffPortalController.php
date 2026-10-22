@@ -90,7 +90,7 @@ class StaffPortalController extends Controller
         $staffProfile = $this->staffProfileOrFail();
         abort_unless($appraisal->staff_profile_id === $staffProfile->id, 403);
         abort_unless($appraisal->sent_to_employee_at, 403, 'This form has not been sent to you yet.');
-        return view('my.appraisals.fill', compact('appraisal'));
+        return view('admin.appraisals.fill', compact('appraisal'));
     }
 
     public function appraisalSave(Request $request, \App\Models\Appraisal $appraisal)

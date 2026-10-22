@@ -118,6 +118,7 @@ class LeaveRequestController extends Controller
 
     public function update(Request $request, LeaveRequest $leave)
     {
+        abort_unless($leave->status === 'pending', 403, 'Only pending requests can be edited.');
         $validated = $request->validate([
             'staff_profile_id' => 'required|exists:staff_profiles,id',
             'leave_type'       => 'required|in:annual,sick,casual,maternity,paternity,unpaid',
@@ -144,6 +145,7 @@ class LeaveRequestController extends Controller
 
     public function approve(Request $request, LeaveRequest $leave)
     {
+        abort_unless($leave->status === 'pending', 403, 'Only pending requests can be reviewed.');
         abort_unless(auth()->user()->hasAdminPrivileges(), 403, 'Only HR can approve leave requests.');
         $request->validate(['approved_by' => 'required|string|max:255']);
         $leave->update([
@@ -156,6 +158,7 @@ class LeaveRequestController extends Controller
 
     public function reject(Request $request, LeaveRequest $leave)
     {
+        abort_unless($leave->status === 'pending', 403, 'Only pending requests can be reviewed.');
         abort_unless(auth()->user()->hasAdminPrivileges(), 403, 'Only HR can reject leave requests.');
         $request->validate([
             'rejection_reason' => 'required|string|max:1000',

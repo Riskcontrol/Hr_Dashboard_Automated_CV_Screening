@@ -171,6 +171,7 @@ class CVProcessorService
             'found_keywords' => $foundKeywords,
             'missing_keywords' => $missingKeywords,
             'total_keywords' => $totalKeywords,
+            'qualified' => $totalKeywords > 0 && $foundCount === $totalKeywords,
             'found_count' => $foundCount
         ];
     }
@@ -204,13 +205,13 @@ class CVProcessorService
     private function determineQualificationStatus($foundCount, $totalKeywords)
     {
         if ($totalKeywords > 0 && $foundCount === $totalKeywords) {
-            return 'Qualified';
+            return 'qualified';
         }
 
         if ($foundCount >= 3) {
             return 'Fairly Qualified';
         }
 
-        return 'Not Qualified';
+        return 'not_qualified';
     }
 }
