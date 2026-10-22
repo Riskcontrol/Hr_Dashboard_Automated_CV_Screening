@@ -17,10 +17,15 @@ class Kernel extends ConsoleKernel
                  ->everyMinute()
                  ->withoutOverlapping()
                  ->runInBackground();
-                 
+
         // Clean up failed jobs older than 48 hours
         $schedule->command('queue:prune-failed --hours=48')
                  ->daily();
+
+        // Email HR a countdown reminder (3, 2, then 1 day before) for
+        // any staff member whose birthday is coming up.
+        $schedule->command('birthdays:remind')
+                 ->dailyAt('07:00');
     }
 
     /**

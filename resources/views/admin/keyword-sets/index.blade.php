@@ -1,99 +1,106 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-    <h1 class="h2">Keyword Sets</h1>
-    <div class="btn-toolbar mb-2 mb-md-0">
-        <a href="{{ route('admin.keyword-sets.create') }}" class="btn btn-primary">
-            <i class="fas fa-plus me-2"></i>
-            Create New Set
-        </a>
+
+<div class="mb-6 flex justify-between items-center">
+    <div>
+        <h1 class="text-3xl font-bold text-gray-900">Job Positions</h1>
+        <p class="text-gray-500 mt-1">Manage keyword sets used for CV screening</p>
     </div>
+    <a href="{{ route('admin.keyword-sets.create') }}" class="btn btn-primary">
+        <i class="fas fa-plus mr-2"></i> Create New Position
+    </a>
 </div>
 
-<div class="card">
-    <div class="card-body">
-        @if($keywordSets->count() > 0)
-            <div class="table-responsive">
-                <table class="table table-hover">
-                    <thead>
-                        <tr>
-                            <th>Job Title</th>
-                            <th>Keywords</th>
-                            <th>Status</th>
-                            <th>Applications</th>
-                            <th>Created By</th>
-                            <th>Created</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($keywordSets as $set)
-                        <tr>
-                            <td>
-                                <strong>{{ $set->job_title }}</strong>
-                                @if($set->description)
-                                    <br><small class="text-muted">{{ Str::limit($set->description, 50) }}</small>
-                                @endif
-                            </td>
-                            <td>
-                                <div class="keywords-preview">
-                                    @foreach(array_slice($set->keywords, 0, 3) as $keyword)
-                                        <span class="badge bg-secondary me-1">{{ $keyword }}</span>
-                                    @endforeach
-                                    @if(count($set->keywords) > 3)
-                                        <span class="text-muted">+{{ count($set->keywords) - 3 }} more</span>
-                                    @endif
-                                </div>
-                            </td>
-                            <td>
-                                @if($set->is_active)
-                                    <span class="badge bg-success">Active</span>
-                                @else
-                                    <span class="badge bg-secondary">Inactive</span>
-                                @endif
-                            </td>
-                            <td>
-                                <span class="badge bg-primary">{{ $set->applications_count ?? 0 }}</span>
-                            </td>
-                            <td>{{ $set->creator->name }}</td>
-                            <td>{{ $set->created_at->format('M d, Y') }}</td>
-                            <td>
-                                <div class="btn-group btn-group-sm" role="group">
-                                    <a href="{{ route('admin.keyword-sets.show', $set) }}" class="btn btn-outline-info">
-                                        <i class="fas fa-eye"></i>
-                                    </a>
-                                    <a href="{{ route('admin.keyword-sets.edit', $set) }}" class="btn btn-outline-warning">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                    <form method="POST" action="{{ route('admin.keyword-sets.destroy', $set) }}" class="d-inline" 
-                                          onsubmit="return confirm('Are you sure you want to delete this keyword set?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-outline-danger">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
+@if(session('success'))
+    <div class="alert alert-success mb-4"><i class="fas fa-check-circle mr-2"></i>{{ session('success') }}</div>
+@endif
+
+@if($keywordSets->count() > 0)
+
+<div class="bg-white rounded-lg shadow overflow-hidden">
+    <table class="w-full">
+        <thead class="bg-gray-50 border-b">
+            <tr>
+                <th class="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Job Title</th>
+                <th class="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Keywords</th>
+                <th class="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Status</th>
+                <th class="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Applications</th>
+                <th class="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Created By</th>
+                <th class="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Created</th>
+                <th class="px-6 py-3"></th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100">
+            @foreach($keywordSets as $set)
+            <tr class="hover:bg-gray-50">
+                <td class="px-6 py-4">
+                    <p class="font-medium text-gray-900">{{ $set->job_title }}</p>
+                    @if($set->description)
+                        <p class="text-xs text-gray-500 mt-1">{{ Str::limit($set->description, 60) }}</p>
+                    @endif
+                </td>
+                <td class="px-6 py-4">
+                    <div class="flex flex-wrap gap-1">
+                        @foreach(array_slice($set->keywords, 0, 3) as $keyword)
+                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-700">
+                                {{ $keyword }}
+                            </span>
                         @endforeach
-                    </tbody>
-                </table>
-            </div>
-
-            {{ $keywordSets->links() }}
-        @else
-            <div class="text-center py-5">
-                <i class="fas fa-tags fa-3x text-muted mb-3"></i>
-                <h5 class="text-muted">No keyword sets created yet</h5>
-                <p class="text-muted">Create your first keyword set to start screening CVs.</p>
-                <a href="{{ route('admin.keyword-sets.create') }}" class="btn btn-primary">
-                    <i class="fas fa-plus me-2"></i>
-                    Create Keyword Set
-                </a>
-            </div>
-        @endif
+                        @if(count($set->keywords) > 3)
+                            <span class="text-xs text-gray-400">+{{ count($set->keywords) - 3 }} more</span>
+                        @endif
+                    </div>
+                </td>
+                <td class="px-6 py-4">
+                    @if($set->is_active)
+                        <span class="badge badge-success">Active</span>
+                    @else
+                        <span class="badge badge-secondary">Inactive</span>
+                    @endif
+                </td>
+                <td class="px-6 py-4">
+                    <span class="font-bold text-gray-900">{{ $set->applications_count ?? 0 }}</span>
+                </td>
+                <td class="px-6 py-4 text-sm text-gray-600">{{ $set->creator->name }}</td>
+                <td class="px-6 py-4 text-sm text-gray-500">{{ $set->created_at->format('M d, Y') }}</td>
+                <td class="px-6 py-4">
+                    <div class="flex items-center gap-3">
+                        <a href="{{ route('admin.keyword-sets.show', $set) }}"
+                           class="text-blue-500 hover:text-blue-700" title="View">
+                            <i class="fas fa-eye"></i>
+                        </a>
+                        <a href="{{ route('admin.keyword-sets.edit', $set) }}"
+                           class="text-yellow-500 hover:text-yellow-700" title="Edit">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <form method="POST" action="{{ route('admin.keyword-sets.destroy', $set) }}"
+                              class="inline" onsubmit="return confirm('Delete this keyword set?')">
+                            @csrf @method('DELETE')
+                            <button type="submit" class="text-red-400 hover:text-red-600" title="Delete">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            @endforeach
+        </tbody>
+    </table>
+    <div class="px-6 py-4 border-t">
+        {{ $keywordSets->links() }}
     </div>
 </div>
+
+@else
+<div class="bg-white rounded-lg shadow p-16 text-center">
+    <i class="fas fa-tags text-5xl text-gray-300 mb-4 block"></i>
+    <h3 class="text-lg font-medium text-gray-900 mb-2">No job positions yet</h3>
+    <p class="text-gray-500 mb-6">Create your first keyword set to start screening CVs.</p>
+    <a href="{{ route('admin.keyword-sets.create') }}" class="btn btn-primary">
+        <i class="fas fa-plus mr-2"></i> Create First Position
+    </a>
+</div>
+@endif
+
 @endsection

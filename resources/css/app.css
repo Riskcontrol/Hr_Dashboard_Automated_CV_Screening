@@ -4,6 +4,24 @@
 
 /* Custom styles */
 @layer components {
+
+  .stat-card-square {
+    aspect-ratio: 1 / 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 0.5rem;
+  }
+  .stat-card-square > div:first-child {
+    margin: 0 auto;
+  }
+  .stat-card-square .ml-4 {
+    margin-left: 0;
+    margin-top: 0.5rem;
+  }
+
   .btn {
     @apply inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 transition duration-150 ease-in-out;
   }

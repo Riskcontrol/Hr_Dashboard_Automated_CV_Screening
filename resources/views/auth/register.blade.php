@@ -134,7 +134,5 @@
                 });
             });
         });
-    </script>
-</x-guest-layout>
-    </form>
+        </script>
 </x-guest-layout>
